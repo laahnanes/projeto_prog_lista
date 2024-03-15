@@ -1,6 +1,7 @@
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -10,13 +11,15 @@ import java.util.Optional;
 public class MainSceneController {
 
     @FXML
-    private ListView<String> listaDeCompras;
+    private ListView<HBox> listaDeCompras;
     @FXML
     private TextField campoDeTexto;
     @FXML
     private ComboBox<String> comboBoxListas;
     @FXML
     private Text totalItensText;
+    @FXML
+    private Text totalPriceText;
 
     private List<List<Item>> todasAsListas;
     private List<Item> listaAtual;
@@ -30,19 +33,35 @@ public class MainSceneController {
     private void adicionarItem(ActionEvent event) {
         String itemNome = campoDeTexto.getText().trim();
         if (!itemNome.isEmpty()) {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Quantidade de Itens");
-            dialog.setHeaderText(null);
-            dialog.setContentText("Quantas unidades?");
+            TextInputDialog quantidadeDialog = new TextInputDialog();
+            quantidadeDialog.setTitle("Quantidade de Itens");
+            quantidadeDialog.setHeaderText(null);
+            quantidadeDialog.setContentText("Quantas unidades?");
 
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(quantidadeStr -> {
+            Optional<String> resultQuantidade = quantidadeDialog.showAndWait();
+            resultQuantidade.ifPresent(quantidadeStr -> {
                 try {
                     int quantidade = Integer.parseInt(quantidadeStr);
                     if (quantidade > 0) {
-                        Item item = new Item(itemNome, quantidade);
-                        listaAtual.add(item);
-                        atualizarListaDeCompras();
+                        TextInputDialog precoDialog = new TextInputDialog();
+                        precoDialog.setTitle("Preço do Item");
+                        precoDialog.setHeaderText(null);
+                        precoDialog.setContentText("Qual o preço unitário? (R$)");
+
+                        Optional<String> resultPreco = precoDialog.showAndWait();
+                        resultPreco.ifPresent(precoStr -> {
+                            try {
+                                double preco = Double.parseDouble(precoStr);
+                                if (preco >= 0) {
+                                    Item item = new Item(itemNome, quantidade, preco);
+                                    listaAtual.add(item);
+                                    atualizarListaDeCompras();
+                                }
+                            } catch (NumberFormatException e) {
+                                // Lidar com a entrada inválida para o preço
+                                e.printStackTrace();
+                            }
+                        });
                     }
                 } catch (NumberFormatException e) {
                     // Lidar com a entrada inválida para a quantidade
@@ -56,9 +75,30 @@ public class MainSceneController {
     private void atualizarListaDeCompras() {
         listaDeCompras.getItems().clear();
         for (Item item : listaAtual) {
-            listaDeCompras.getItems().add(item.toString());
+            HBox hbox = new HBox();
+            Label label = new Label(item.toString());
+            Button incrementButton = new Button("+");
+            Button decrementButton = new Button("-");
+            incrementButton.setOnAction(e -> incrementarQuantidade(item));
+            decrementButton.setOnAction(e -> decrementarQuantidade(item));
+            hbox.getChildren().addAll(label, incrementButton, decrementButton);
+            listaDeCompras.getItems().add(hbox);
         }
         atualizarTotalItens();
+        atualizarPrecoTotal();
+    }
+
+    private void incrementarQuantidade(Item item) {
+        item.incrementarQuantidade();
+        atualizarListaDeCompras();
+    }
+
+    private void decrementarQuantidade(Item item) {
+        item.decrementarQuantidade();
+        if (item.getQuantidade() <= 0) {
+            listaAtual.remove(item);
+        }
+        atualizarListaDeCompras();
     }
 
     private void atualizarTotalItens() {
@@ -67,6 +107,15 @@ public class MainSceneController {
             total += item.getQuantidade();
         }
         totalItensText.setText("Itens totais: " + total);
+    }
+
+    private void atualizarPrecoTotal() {
+        double precoTotal = 0;
+        for (Item item : listaAtual) {
+            precoTotal += item.getPrecoTotal();
+        }
+        totalPriceText.setText("Preço total: R$" + String.format("%.2f", precoTotal));
+
     }
 
     @FXML
@@ -101,6 +150,7 @@ public class MainSceneController {
             listaAtual.clear();
             listaDeCompras.getItems().clear();
             atualizarTotalItens();
+            atualizarPrecoTotal();
         }
     }
 
@@ -116,10 +166,12 @@ public class MainSceneController {
     private static class Item {
         private String nome;
         private int quantidade;
+        private double precoUnitario;
 
-        public Item(String nome, int quantidade) {
+        public Item(String nome, int quantidade, double precoUnitario) {
             this.nome = nome;
             this.quantidade = quantidade;
+            this.precoUnitario = precoUnitario;
         }
 
         public String getNome() {
@@ -130,9 +182,25 @@ public class MainSceneController {
             return quantidade;
         }
 
+        public double getPrecoUnitario() {
+            return precoUnitario;
+        }
+
+        public double getPrecoTotal() {
+            return quantidade * precoUnitario;
+        }
+
+        public void incrementarQuantidade() {
+            quantidade++;
+        }
+
+        public void decrementarQuantidade() {
+            quantidade--;
+        }
+
         @Override
         public String toString() {
-            return quantidade + " und - " + nome;
+            return quantidade + " und - " + nome + " (R$" + String.format("%.2f", precoUnitario) + ")";
         }
     }
 }

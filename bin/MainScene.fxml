@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?> <!-- Adicionamos a importação para o elemento Text -->
+<?import javafx.scene.text.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainSceneController" style="-fx-background-color: #f2f2f2;">
 
@@ -13,7 +14,8 @@
                 <Button fx:id="adicionarItemButton" mnemonicParsing="false" text="Adicionar" onAction="#adicionarItem" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;"/>
                 <Button fx:id="removerItemButton" mnemonicParsing="false" text="Remover" onAction="#removerItem" style="-fx-font-size: 14px; -fx-background-color: #F44336; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;"/>
             </HBox>
-            <Text fx:id="totalItensText" style="-fx-font-size: 14px;"/> <!-- Text agora é um tipo válido -->
+            <Text fx:id="totalItensText" style="-fx-font-size: 14px;"/>
+            <Text fx:id="totalPriceText" style="-fx-font-size: 14px;"/>
         </VBox>
     </center>
 
