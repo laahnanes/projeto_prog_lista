@@ -1,6 +1,7 @@
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +15,11 @@ public class MainSceneController {
     private TextField campoDeTexto;
     @FXML
     private ComboBox<String> comboBoxListas;
+    @FXML
+    private Text totalItensText;
 
-    private List<List<String>> todasAsListas;
-    private List<String> listaAtual;
+    private List<List<Item>> todasAsListas;
+    private List<Item> listaAtual;
 
     public void initialize() {
         todasAsListas = new ArrayList<>();
@@ -25,12 +28,45 @@ public class MainSceneController {
 
     @FXML
     private void adicionarItem(ActionEvent event) {
-        String item = campoDeTexto.getText().trim();
-        if (!item.isEmpty()) {
-            listaAtual.add(item);
-            listaDeCompras.getItems().setAll(listaAtual);
+        String itemNome = campoDeTexto.getText().trim();
+        if (!itemNome.isEmpty()) {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Quantidade de Itens");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Quantas unidades?");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(quantidadeStr -> {
+                try {
+                    int quantidade = Integer.parseInt(quantidadeStr);
+                    if (quantidade > 0) {
+                        Item item = new Item(itemNome, quantidade);
+                        listaAtual.add(item);
+                        atualizarListaDeCompras();
+                    }
+                } catch (NumberFormatException e) {
+                    // Lidar com a entrada inválida para a quantidade
+                    e.printStackTrace();
+                }
+            });
             campoDeTexto.clear();
         }
+    }
+
+    private void atualizarListaDeCompras() {
+        listaDeCompras.getItems().clear();
+        for (Item item : listaAtual) {
+            listaDeCompras.getItems().add(item.toString());
+        }
+        atualizarTotalItens();
+    }
+
+    private void atualizarTotalItens() {
+        int total = 0;
+        for (Item item : listaAtual) {
+            total += item.getQuantidade();
+        }
+        totalItensText.setText("Itens totais: " + total);
     }
 
     @FXML
@@ -38,7 +74,7 @@ public class MainSceneController {
         int index = listaDeCompras.getSelectionModel().getSelectedIndex();
         if (index != -1) {
             listaAtual.remove(index);
-            listaDeCompras.getItems().setAll(listaAtual);
+            atualizarListaDeCompras();
         }
     }
 
@@ -64,6 +100,7 @@ public class MainSceneController {
             comboBoxListas.getItems().remove(index);
             listaAtual.clear();
             listaDeCompras.getItems().clear();
+            atualizarTotalItens();
         }
     }
 
@@ -72,7 +109,30 @@ public class MainSceneController {
         int index = comboBoxListas.getSelectionModel().getSelectedIndex();
         if (index != -1) {
             listaAtual = todasAsListas.get(index);
-            listaDeCompras.getItems().setAll(listaAtual);
+            atualizarListaDeCompras();
+        }
+    }
+
+    private static class Item {
+        private String nome;
+        private int quantidade;
+
+        public Item(String nome, int quantidade) {
+            this.nome = nome;
+            this.quantidade = quantidade;
+        }
+
+        public String getNome() {
+            return nome;
+        }
+
+        public int getQuantidade() {
+            return quantidade;
+        }
+
+        @Override
+        public String toString() {
+            return quantidade + " und - " + nome;
         }
     }
 }
