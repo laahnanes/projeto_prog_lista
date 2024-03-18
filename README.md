@@ -1,12 +1,13 @@
 ## Lista de Compras
 
-Este é um aplicativo desenvolvido em Java, juntamente com JavaFX para gerenciar listas de compras. Com ele, você pode criar diferentes listas, adicionar itens, especificar a quantidade de cada item e excluí-los quando necessário.
+Este é um aplicativo desenvolvido em Java, juntamente com JavaFX para gerenciar listas de compras. Com ele, você pode criar diferentes listas, adicionar itens, especificar a quantidade de cada item, marcá-los e excluí-los quando necessário.
 
 ## Funcionalidades
 
 - Criar novas listas de compras
-- Adicionar itens à lista, incluindo nome e quantidade
-- Editar itens existentes na lista
+- Adicionar itens à lista, incluindo nome, quantidade e preço
+- Editar quantidade de itens específicos da lista
+- Dar check nos itens
 - Excluir itens da lista
 - Limpar toda a lista
 
