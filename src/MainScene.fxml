@@ -1,32 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainSceneController" style="-fx-background-color: #f2f2f2;">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-    <!-- Conteúdo central -->
-    <center>
-        <VBox spacing="20" alignment="CENTER">
-            <ListView fx:id="listaDeCompras" prefHeight="200.0" prefWidth="400.0"/>
-            <HBox spacing="10" alignment="CENTER">
-                <TextField fx:id="campoDeTexto" promptText="Adicionar item..." style="-fx-font-size: 14px; -fx-pref-width: 200px; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-border-color: #CCCCCC; -fx-padding: 5px;"/>
-                <Button fx:id="adicionarItemButton" mnemonicParsing="false" text="Adicionar" onAction="#adicionarItem" style="-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;"/>
-                <Button fx:id="removerItemButton" mnemonicParsing="false" text="Remover" onAction="#removerItem" style="-fx-font-size: 14px; -fx-background-color: #F44336; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;"/>
-            </HBox>
-            <Text fx:id="totalItensText" style="-fx-font-size: 14px;"/>
-            <Text fx:id="totalPriceText" style="-fx-font-size: 14px;"/>
-        </VBox>
-    </center>
+<BorderPane prefHeight="639.0" prefWidth="548.0" style="-fx-background-color: #f2f2f2;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21" fx:controller="MainSceneController">
 
     <!-- Conteúdo inferior -->
     <bottom>
-        <VBox spacing="20" alignment="CENTER">
-            <ComboBox fx:id="comboBoxListas" promptText="Selecionar Lista..." style="-fx-font-size: 14px; -fx-pref-width: 200px; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-border-color: #CCCCCC; -fx-padding: 5px;" onAction="#exibirListaSelecionada"/>
-            <HBox spacing="10" alignment="CENTER">
-                <Button fx:id="criarListaButton" mnemonicParsing="false" text="Criar Lista" onAction="#criarLista" style="-fx-font-size: 14px; -fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;"/>
-                <Button fx:id="excluirListaButton" mnemonicParsing="false" text="Excluir Lista" onAction="#excluirLista" style="-fx-font-size: 14px; -fx-background-color: #FF5722; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;"/>
-            </HBox>
-        </VBox>
+        <VBox alignment="CENTER" spacing="20" />
     </bottom>
+   <top>
+        <VBox alignment="CENTER" prefHeight="638.0" prefWidth="548.0" spacing="20" style="-fx-background-color: #FFF8DC;" BorderPane.alignment="CENTER">
+            <HBox alignment="CENTER" prefHeight="65.0" prefWidth="548.0" spacing="10" style="-fx-background-color: #FFF8DC;">
+            <ImageView fitHeight="48.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../../Downloads/carrinhp.png" />
+               </image>
+            </ImageView>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" />
+               <ComboBox fx:id="comboBoxListas" onAction="#exibirListaSelecionada" opacity="0.83" promptText="Selecionar Lista..." style="-fx-font-size: 14px; -fx-pref-width: 200px; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-border-color: #F4A460; -fx-padding: 5px;">
+               <effect>
+                  <Blend />
+               </effect>
+            </ComboBox>
+                <Button fx:id="criarListaButton" mnemonicParsing="false" onAction="#criarLista" style="-fx-font-size: 14px; -fx-background-color: #F4A460; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;" text="Criar Lista" />
+                <Button fx:id="excluirListaButton" mnemonicParsing="false" onAction="#excluirLista" style="-fx-font-size: 14px; -fx-background-color: #F4A460; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;" text="Excluir Lista" />
+            </HBox>
+            <ListView fx:id="listaDeCompras" prefHeight="410.0" prefWidth="548.0" style="-fx-background-color: #FFFFF0;" />
+            <HBox alignment="CENTER" spacing="10">
+                <TextField fx:id="campoDeTexto" promptText="Adicionar item..." style="-fx-font-size: 14px; -fx-pref-width: 200px; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-border-color: #F4A460; -fx-padding: 5px;" />
+                <Button fx:id="adicionarItemButton" mnemonicParsing="false" onAction="#adicionarItem" style="-fx-font-size: 14px; -fx-background-color: #F4A460; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;" text="Adicionar" />
+                <Button fx:id="removerItemButton" mnemonicParsing="false" onAction="#removerItem" style="-fx-font-size: 14px; -fx-background-color: #F4A460; -fx-text-fill: white; -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-padding: 8px 16px;" text="Remover" />
+            </HBox>
+            <Text fx:id="totalItensText" fill="SANDYBROWN" style="-fx-font-size: 14px;" />
+            <Text fx:id="totalPriceText" fill="SANDYBROWN" style="-fx-font-size: 14px;" />
+        </VBox>
+   </top>
 </BorderPane>
