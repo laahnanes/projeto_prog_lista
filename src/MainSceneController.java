@@ -27,6 +27,21 @@ public class MainSceneController {
     public void initialize() {
         todasAsListas = new ArrayList<>();
         listaAtual = new ArrayList<>();
+        listaDeCompras.setCellFactory(lv -> new ListCell<HBox>() {
+            @Override
+            protected void updateItem(HBox item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    CheckBox checkBox = (CheckBox) item.getChildren().get(0);
+                    Item listItem = listaAtual.get(getIndex());
+                    checkBox.setSelected(listItem.isMarcado());
+                    checkBox.setOnAction(e -> marcarItem(checkBox, listItem));
+                    setGraphic(item);
+                }
+            }
+        });
     }
 
     @FXML
@@ -89,12 +104,18 @@ public class MainSceneController {
         listaDeCompras.getItems().clear();
         for (Item item : listaAtual) {
             HBox hbox = new HBox();
+            CheckBox checkBox = new CheckBox();
             Label label = new Label(item.toString());
             Button incrementButton = new Button("+");
             Button decrementButton = new Button("-");
+            incrementButton.setPrefWidth(30);
+            decrementButton.setPrefWidth(30);
+            incrementButton.setStyle("-fx-background-color: #F4A460; -fx-text-fill: white;");
+            decrementButton.setStyle("-fx-background-color: #F4A460; -fx-text-fill: white;");
             incrementButton.setOnAction(e -> incrementarQuantidade(item));
             decrementButton.setOnAction(e -> decrementarQuantidade(item));
-            hbox.getChildren().addAll(label, incrementButton, decrementButton);
+            hbox.setSpacing(10);
+            hbox.getChildren().addAll(checkBox, label, incrementButton, decrementButton);
             listaDeCompras.getItems().add(hbox);
         }
         atualizarTotalItens();
@@ -113,6 +134,11 @@ public class MainSceneController {
         }
         atualizarListaDeCompras();
     }
+
+    @FXML
+    private void marcarItem(CheckBox checkBox, Item item) {
+    item.setMarcado(checkBox.isSelected());
+}
 
     private void atualizarTotalItens() {
         int total = 0;
@@ -180,11 +206,20 @@ public class MainSceneController {
         private String nome;
         private int quantidade;
         private double precoUnitario;
+        private boolean marcado;
 
         public Item(String nome, int quantidade, double precoUnitario) {
             this.nome = nome;
             this.quantidade = quantidade;
             this.precoUnitario = precoUnitario;
+        }
+
+        public boolean isMarcado() {
+            return marcado;
+        }
+
+        public void setMarcado(boolean marcado) {
+            this.marcado = marcado;
         }
 
         public String getNome() {
@@ -213,7 +248,7 @@ public class MainSceneController {
 
         @Override
         public String toString() {
-            return quantidade + " und - " + nome + " (R$" + String.format("%.2f", precoUnitario) + ")";
+            return "   " + quantidade + " und - " + nome + "   (R$" + String.format("%.2f", precoUnitario) + ")";
         }
     }
 }
