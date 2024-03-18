@@ -27,28 +27,12 @@ public class MainSceneController {
     public void initialize() {
         todasAsListas = new ArrayList<>();
         listaAtual = new ArrayList<>();
-        listaDeCompras.setCellFactory(lv -> new ListCell<HBox>() {
-            @Override
-            protected void updateItem(HBox item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    CheckBox checkBox = (CheckBox) item.getChildren().get(0);
-                    Item listItem = listaAtual.get(getIndex());
-                    checkBox.setSelected(listItem.isMarcado());
-                    checkBox.setOnAction(e -> marcarItem(checkBox, listItem));
-                    setGraphic(item);
-                }
-            }
-        });
     }
-
 
     @FXML
     private void adicionarItem(ActionEvent event) {
         String itemNome = campoDeTexto.getText().trim();
-        if (!itemNome.isEmpty()) {
+        if (!itemNome.isEmpty() && comboBoxListas.getSelectionModel().getSelectedItem() != null) {
             TextInputDialog quantidadeDialog = new TextInputDialog();
             quantidadeDialog.setTitle("Quantidade de Itens");
             quantidadeDialog.setHeaderText(null);
@@ -68,48 +52,54 @@ public class MainSceneController {
                         resultPreco.ifPresent(precoStr -> {
                             try {
                                 double preco = Double.parseDouble(precoStr);
-                                if (preco >= 0) {
+                                if (preco > 0) {
                                     Item item = new Item(itemNome, quantidade, preco);
                                     listaAtual.add(item);
                                     atualizarListaDeCompras();
+                                } else {
+                                    exibirAlerta("Erro", "Preço Inválido", "O preço deve ser maior que zero.");
                                 }
                             } catch (NumberFormatException e) {
-                                // Lidar com a entrada inválida para o preço
-                                e.printStackTrace();
+                                exibirAlerta("Erro", "Preço Inválido", "O preço deve ser um número válido.");
                             }
                         });
+                    } else {
+                        exibirAlerta("Erro", "Quantidade Inválida", "A quantidade deve ser maior que zero.");
                     }
                 } catch (NumberFormatException e) {
-                    // Lidar com a entrada inválida para a quantidade
-                    e.printStackTrace();
+                    exibirAlerta("Erro", "Quantidade Inválida", "A quantidade deve ser um número inteiro válido.");
                 }
             });
             campoDeTexto.clear();
+        } else {
+            exibirAlerta("Nenhuma lista encontrada", "Por favor, selecione uma lista.",
+                    "Selecione uma lista antes de adicionar um item. Caso não exista lista, crie uma nova.");
         }
+    }
+
+    private void exibirAlerta(String titulo, String cabecalho, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(titulo);
+        alert.setHeaderText(cabecalho);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
     }
 
     private void atualizarListaDeCompras() {
         listaDeCompras.getItems().clear();
         for (Item item : listaAtual) {
             HBox hbox = new HBox();
-            CheckBox checkBox = new CheckBox();
             Label label = new Label(item.toString());
             Button incrementButton = new Button("+");
             Button decrementButton = new Button("-");
-            incrementButton.setPrefWidth(30);
-            decrementButton.setPrefWidth(30);
-            incrementButton.setStyle("-fx-background-color: #F4A460; -fx-text-fill: white;");
-            decrementButton.setStyle("-fx-background-color: #F4A460; -fx-text-fill: white;");
             incrementButton.setOnAction(e -> incrementarQuantidade(item));
             decrementButton.setOnAction(e -> decrementarQuantidade(item));
-            hbox.setSpacing(10);
-            hbox.getChildren().addAll(checkBox, label, incrementButton, decrementButton);
+            hbox.getChildren().addAll(label, incrementButton, decrementButton);
             listaDeCompras.getItems().add(hbox);
         }
         atualizarTotalItens();
         atualizarPrecoTotal();
     }
-    
 
     private void incrementarQuantidade(Item item) {
         item.incrementarQuantidade();
@@ -186,17 +176,10 @@ public class MainSceneController {
         }
     }
 
-    @FXML
-    private void marcarItem(CheckBox checkBox, Item item) {
-    item.setMarcado(checkBox.isSelected());
-}
-
-
     private static class Item {
         private String nome;
         private int quantidade;
         private double precoUnitario;
-        private boolean marcado;
 
         public Item(String nome, int quantidade, double precoUnitario) {
             this.nome = nome;
@@ -220,14 +203,6 @@ public class MainSceneController {
             return quantidade * precoUnitario;
         }
 
-        public boolean isMarcado() {
-            return marcado;
-        }
-    
-        public void setMarcado(boolean marcado) {
-            this.marcado = marcado;
-        }
-
         public void incrementarQuantidade() {
             quantidade++;
         }
@@ -238,7 +213,7 @@ public class MainSceneController {
 
         @Override
         public String toString() {
-            return "   " + quantidade + " und - " + nome + "   (R$" + String.format("%.2f", precoUnitario) + ")";
+            return quantidade + " und - " + nome + " (R$" + String.format("%.2f", precoUnitario) + ")";
         }
     }
 }
